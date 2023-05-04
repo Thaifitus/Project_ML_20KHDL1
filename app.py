@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_cors import CORS
 import numpy as np
 import torch
@@ -11,6 +11,10 @@ CORS(app)
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased', output_attentions=True)
 model.eval()
+
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 @app.route('/fillblanks', methods=['POST'])
 def predict():
