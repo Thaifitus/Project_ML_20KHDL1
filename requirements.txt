@@ -5,7 +5,7 @@ gunicorn
 flask_cors
 
 numpy
-torch
+# torch
 
 # Additional Python packages for pytorch_transformers : https://pytorch.org/hub/huggingface_pytorch-transformers/
 pytorch_transformers
