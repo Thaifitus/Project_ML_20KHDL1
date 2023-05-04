@@ -6,6 +6,8 @@ from pytorch_transformers import BertTokenizer, BertForMaskedLM
 import nltk
 import streamlit as st
 
+nltk.download('punkt')
+
 # app = Flask(__name__)
 # CORS(app)
 
