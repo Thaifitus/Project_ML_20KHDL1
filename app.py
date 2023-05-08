@@ -57,7 +57,6 @@ def predict():
 	return sentence_orig.replace('____', predicted_token)
 
 if __name__=='__main__':
-	# app.run(debug=False)
 	st.header(":blue[DistillBERT]")
 	st.write(":blue[DistillBERT] is a fill-in-the-blanks model that is trained to predict the missing word in the sentence. For the purpose of this demo we will be using pre-trained distillbert-base-uncased as our prediction model.")
 
