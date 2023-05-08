@@ -1,12 +1,3 @@
-Flask
-gunicorn
-
-# Cannot import flask_cors : https://stackoverflow.com/questions/48714769/python-flask-cors-importerror-no-module-named-flask-cors-raspberry-pi
-flask_cors
-
-numpy
-# torch
-
 # Additional Python packages for pytorch_transformers : https://pytorch.org/hub/huggingface_pytorch-transformers/
 pytorch_transformers
 tqdm
@@ -16,4 +7,5 @@ regex
 sentencepiece
 sacremoses
 
+# NLTK
 nltk
