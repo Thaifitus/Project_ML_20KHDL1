@@ -4,18 +4,49 @@ from pytorch_transformers import BertTokenizer, BertForMaskedLM
 import nltk
 import streamlit as st
 nltk.download('punkt')
+from PIL import Image # for importing image
 
 
+# FOOTER : https://discuss.streamlit.io/t/streamlit-footer/12181
+footer="""<style>
+a:link , a:visited{
+color: blue;
+background-color: transparent;
+text-decoration: underline;
+}
+
+a:hover,  a:active {
+color: red;
+background-color: transparent;
+text-decoration: underline;
+}
+
+.footer {
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+background-color: black;
+color: white;
+text-align: center;
+}
+</style>
+<div class="footer">
+<p> <b>Based on GitHub repository</b>  <a style='display: block; text-align: center;' href="https://github.com/prakhar21/Fill-in-the-BERT.git" target="_blank">Fill-in-the-BERT by prakhar21</a></p>
+</div>
+"""
+
+
+# Predicting a word
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased', output_attentions=True)
 model.eval()
-
 def predict():
-	sentence_orig = st.text_input('Input text:', 'I ____ you')
-	if '____' not in sentence_orig:
+	sentence_orig = st.text_input('Input text:', 'I __ you')
+	if '__' not in sentence_orig:
 		return sentence_orig
 
-	sentence = sentence_orig.replace('____', 'MASK')
+	sentence = sentence_orig.replace('__', 'MASK')
 	tokens = nltk.word_tokenize(sentence)
 	sentences = nltk.sent_tokenize(sentence)
 	sentence = " [SEP] ".join(sentences)
@@ -47,21 +78,35 @@ def predict():
 	#print (avg_wgts, tokenized_text)
 	focus = [tokenized_text[i] for i in avg_wgts.argsort().tolist()[::-1] if tokenized_text[i] not in ['[SEP]', '[CLS]', '[MASK]']][:5]
 
-	# for layer in range(12):
-	# 	weights_layer = np.array(attention[0][0][layer][masked_index])
-	# 	print (weights_layer, tokenized_text)
-	# 	print (weights_layer.argsort()[-3:][::-1])
-	# 	print ()
 	predicted_index = torch.argmax(predictions[0, masked_index]).item()
 	predicted_token = tokenizer.convert_ids_to_tokens([predicted_index])[0]
-	return sentence_orig.replace('____', predicted_token)
+
+	for f in focus:
+		sentence_orig = sentence_orig.replace(f, '<font color="blue">'+f+'</font>')
+	return sentence_orig.replace('__', '<font color="red"><b><i>'+predicted_token+'</i></b></font>')
+
 
 if __name__=='__main__':
-	st.header(":blue[DistillBERT]")
-	st.write(":blue[DistillBERT] is a fill-in-the-blanks model that is trained to predict the missing word in the sentence. For the purpose of this demo we will be using pre-trained distillbert-base-uncased as our prediction model.")
+	st.header(":blue[Fill-mask model]")
+	st.write(":blue[Fill-mask model] is a fill-in-the-blanks model that is trained to predict the missing word in the sentence. For the purpose of this demo we will be using pre-trained **distillbert-base-uncased** as our prediction model.")
 
+	# Print prediction
 	predicted_sen = predict()
-	st.write(predicted_sen)
+	st.markdown(predicted_sen, unsafe_allow_html=True)
+	
+	# Import image to centre of page : https://stackoverflow.com/questions/70932538/how-to-center-the-title-and-an-image-in-streamlit
+	# image = Image.open('BERT_img_test.png')
+	col1, col2, col3 = st.columns(3)
+	with col1:
+		st.write(' ')
+	with col2:
+		st.image("BERT_img_test.png")
+	with col3:
+		st.write(' ')
 
+	# Demo munual
 	st.write("**Demo Manual**")
-	st.write("1. Use ____ as the marker for representing blank space in the text.\n2. Give only one blank space (____) at a time. More than one blanks are not taken care.")
+	st.write("1. Use __ as the marker for representing blank space in the text.\n2. Give only one blank space (__) at a time. More than one blanks are not taken care.")
+
+	# Insert footer
+	st.markdown(footer, unsafe_allow_html=True)
